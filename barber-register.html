@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>تسجيل الحلاق</title>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+  <style>
+    body { font-family: sans-serif; background: #f0f0f0; padding: 2rem; text-align: center; }
+    input, button {
+      padding: 1rem;
+      margin: 0.5rem 0;
+      width: 90%;
+      max-width: 400px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 1rem;
+    }
+    button {
+      background: #2196F3;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h2>تسجيل الحلاق</h2>
+  <input id="barberName" placeholder="اسم الحلاق">
+  <input id="barberPhone" placeholder="رقم الهاتف">
+  <input id="barberEmail" placeholder="الإيميل">
+  <input id="salonName" placeholder="اسم الصالون">
+  <input id="area" placeholder="المنطقة">
+  <input id="location" placeholder="رابط Google Maps">
+  <input id="photo" placeholder="رابط صورة الحلاق (اختياري)">
+  <button onclick="register()">تسجيل</button>
+  <p id="msg" style="color:red;"></p>
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSy...",
+      authDomain: "project-xxx.firebaseapp.com",
+      databaseURL: "https://project-xxx-default-rtdb.firebaseio.com",
+      projectId: "project-xxx",
+      storageBucket: "project-xxx.appspot.com",
+      messagingSenderId: "xxx",
+      appId: "xxx"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+    const barberId = localStorage.getItem("barberId");
+    if (barberId) window.location.href = "barber-dashboard.html";
+    function register() {
+      const name = barberName.value.trim();
+      const phone = barberPhone.value.trim();
+      const email = barberEmail.value.trim();
+      const salon = salonName.value.trim();
+      const area = area.value.trim();
+      const locationUrl = location.value.trim();
+      const photo = photo.value.trim();
+      if (!name || !phone || !email || !salon || !area || !locationUrl) {
+        msg.textContent = "يرجى ملء جميع الحقول";
+        return;
+      }
+      const id = `barber_${Date.now()}`;
+      db.ref("barbers/" + id).set({
+        name, phone, email, salon, area, location: locationUrl, photo,
+        open: true,
+        queue: {}
+      }).then(() => {
+        localStorage.setItem("barberId", id);
+        window.location.href = "barber-dashboard.html";
+      });
+    }
+  </script>
+</body>
+</html>
